@@ -6,7 +6,7 @@ dotenv.config()
 const app = express()
 app.use(cors())
 app.use(express.json())
-const port = process.env.PORT 
+const port = process.env.PORT || 8000
 const uri = process.env.MONGODB_URI;
 
 
@@ -33,8 +33,9 @@ async function run() {
         res.send(result);
       });
 
-      app.get('/facilities', (req, res) => {
-          res.send("all facilities will show here")
+    app.get('/facilities', async (req, res) => {
+        const result = await facilityCollection.find().toArray()
+          res.send(result)
       })
 
 
