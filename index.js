@@ -6,7 +6,7 @@ dotenv.config()
 const app = express()
 app.use(cors())
 app.use(express.json())
-const port = process.env.PORT || 8000
+const port = process.env.PORT 
 const uri = process.env.MONGODB_URI;
 
 
@@ -25,10 +25,17 @@ async function run() {
       const db = client.db('reserva')
       const facilityCollection = db.collection('facilities')
     
+      
+      app.post("/facilities", async (req, res) => {
+        const facilityData = req.body;
+        console.log(facilityData);
+        const result = await facilityCollection.insertOne(facilityData);
+        res.send(result);
+      });
+
       app.get('/facilities', (req, res) => {
           res.send("all facilities will show here")
       })
-
 
 
 
@@ -38,7 +45,7 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
