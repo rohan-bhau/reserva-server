@@ -72,6 +72,10 @@ async function run() {
       )
       res.send(updateData)
     })
+      app.get('/featured', async (req, res) => {
+        const result = await facilityCollection.find().limit(6).toArray()
+        res.send(result)
+    })
 
 
     app.post('/bookings', async (req, res) => {
@@ -84,6 +88,7 @@ async function run() {
       res.send(result)
     })
 
+  
 
    app.get("/bookings", async (req, res) => {
      const result = await bookingCollection.find().toArray();
