@@ -24,6 +24,7 @@ async function run() {
       
       const db = client.db('reserva')
       const facilityCollection = db.collection('facilities')
+      const bookingCollection = db.collection('bookings')
     
       
       app.post("/facilities", async (req, res) => {
@@ -46,6 +47,17 @@ async function run() {
       
       res.send(result)
     });
+
+
+    app.post('/bookings', async (req, res) => {
+      const bookingData = req.body;
+      console.log(bookingData)
+
+      const result = await bookingCollection.insertOne(bookingData)
+
+      res.send(result)
+    })
+
 
 
 
