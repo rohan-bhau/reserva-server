@@ -53,6 +53,14 @@ async function run() {
       const result = await facilityCollection.find({authorId:authorId}).toArray()
       res.send(result);
     });
+    
+    app.delete("/facilities/:id", async (req, res) => {
+      const id = req.params.id
+      const result = await facilityCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
+    });
 
 
     app.post('/bookings', async (req, res) => {
