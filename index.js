@@ -48,8 +48,15 @@ async function run() {
       res.send(result)
     });
 
+    app.get("/facilities/author/:authorId", async (req, res) => {
+      const authorId = req.params.authorId
+      const result = await facilityCollection.find({authorId:authorId}).toArray()
+      res.send(result);
+    });
+
 
     app.post('/bookings', async (req, res) => {
+      console.log(req.params.params)
       const bookingData = req.body;
       console.log(bookingData)
 
