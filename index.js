@@ -53,7 +53,7 @@ async function run() {
       const result = await facilityCollection.find({authorId:authorId}).toArray()
       res.send(result);
     });
-    
+
     app.delete("/facilities/:id", async (req, res) => {
       const id = req.params.id
       const result = await facilityCollection.deleteOne({
@@ -61,6 +61,17 @@ async function run() {
       });
       res.send(result);
     });
+
+    app.patch('/facilities/:id', async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      console.log(updateData)
+      const result = await facilityCollection.updateOne(
+        {_id: new ObjectId(id)},
+        {$set:updateData}
+      )
+      res.send(updateData)
+    })
 
 
     app.post('/bookings', async (req, res) => {
