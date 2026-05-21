@@ -1,7 +1,8 @@
 const express = require('express')
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const dotenv = require('dotenv')
-const cors = require('cors')
+const cors = require('cors');
+const { createRemoteJWKSet, jwtVerify } = require('jose-cjs');
 dotenv.config()
 const app = express()
 app.use(cors())
@@ -18,16 +19,39 @@ const client = new MongoClient(uri, {
   },
 });
 
+const JWKS = createRemoteJWKSet(
+  new URL(`${process.env.CLIENT_URL}/api/auth/jwks`),
+);
+const verifyToken = async (req, res, next) => {
+  const authHeader = req?.headers.authorization
+  if (!authHeader) {
+    return res.status(401).send({message: "Unauthorized"})
+  }
+  const token = authHeader.split(" ")[1]
+  if (!token) {
+     return res.status(401).send({ message: "Unauthorized" });
+  }
+
+  try {
+    const { payload } = await jwtVerify(token, JWKS)
+    console.log(payload)
+    next()
+
+  } catch(error) {
+    return res.status(403).send({ message: "Forbidden" });
+  }
+}
+
 async function run() {
   try {
-      await client.connect();
+      // await client.connect();
       
       const db = client.db('reserva')
       const facilityCollection = db.collection('facilities')
       const bookingCollection = db.collection('bookings')
     
       
-      app.post("/facilities", async (req, res) => {
+      app.post("/facilities",verifyToken, async (req, res) => {
         const facilityData = req.body;
         console.log(facilityData);
         const result = await facilityCollection.insertOne(facilityData);
@@ -39,7 +63,7 @@ async function run() {
           res.send(result)
     })
     
-    app.get("/facilities/:id", async (req, res) => {
+    app.get("/facilities/:id",verifyToken, async (req, res) => {
       const id = req.params.id;
       const result = await facilityCollection.findOne({
         _id: new ObjectId(id),
@@ -48,7 +72,7 @@ async function run() {
       res.send(result)
     });
 
-    app.get("/facilities/author/:authorId", async (req, res) => {
+    app.get("/facilities/author/:authorId",verifyToken, async (req, res) => {
       const authorId = req.params.authorId
       const result = await facilityCollection.find({authorId:authorId}).toArray()
       res.send(result);
@@ -78,7 +102,7 @@ async function run() {
     })
 
 
-    app.post('/bookings', async (req, res) => {
+    app.post('/bookings',verifyToken, async (req, res) => {
       console.log(req.params.params)
       const bookingData = req.body;
       console.log(bookingData)
@@ -90,7 +114,7 @@ async function run() {
 
   
 
-   app.get("/bookings", async (req, res) => {
+   app.get("/bookings", verifyToken, async (req, res) => {
      const result = await bookingCollection.find().toArray();
      console.log(result);
      res.send(result);
@@ -106,7 +130,7 @@ async function run() {
 
 
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!",
     );
