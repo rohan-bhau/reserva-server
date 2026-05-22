@@ -57,12 +57,13 @@ async function run() {
       res.send(result);
     });
 
+    // all facilities route
     app.get("/facilities", async (req, res) => {
       const result = await facilityCollection.find().toArray();
       res.send(result);
     });
 
-
+    // individual route
     app.get("/facilities/author/:authorId", verifyToken, async (req, res) => {
       const authorId = req.params.authorId;
       const result = await facilityCollection
@@ -71,6 +72,7 @@ async function run() {
       res.send(result);
     });
 
+    // dynamic route
     app.get("/facilities/:id", verifyToken, async (req, res) => {
       const id = req.params.id;
       const result = await facilityCollection.findOne({
@@ -78,7 +80,6 @@ async function run() {
       });
       res.send(result);
     });
-    
 
     app.delete("/facilities/:id", async (req, res) => {
       const id = req.params.id;
@@ -98,7 +99,7 @@ async function run() {
       res.send(result); 
     });
 
-    
+    // featured route
     app.get("/featured", async (req, res) => {
       const result = await facilityCollection.find().limit(6).toArray();
       res.send(result);
