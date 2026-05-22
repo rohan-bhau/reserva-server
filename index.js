@@ -162,13 +162,21 @@ async function run() {
 
     // individual booking data
 
-    app.get('/bookings/author/:id', async (req, res) => {
-      const id = req.params.id;
-      const result = await facilityCollection.findOne({
-        _id: new ObjectId(id),
-      });
-      res.send(result);
-    })
+    app.get("/bookings/author/:userId", verifyToken, async (req, res) => {
+      try {
+        const userId = req.params.userId;
+        const result = await bookingCollection.find({ userId }).toArray();
+        res.send(result || []);
+      } catch (error) {
+        console.error("Error fetching user bookings:", error);
+        res
+          .status(500)
+          .send({
+            message: "Error fetching user bookings",
+            error: error.message,
+          });
+      }
+    });
 
     app.delete("/bookings/:id", async (req, res) => {
       const id = req.params.id;
