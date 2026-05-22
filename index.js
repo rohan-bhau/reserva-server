@@ -28,6 +28,7 @@ const verifyToken = async (req, res, next) => {
     return res.status(401).send({ message: "Unauthorized" });
   }
   const token = authHeader.split(" ")[1];
+  console.log("token",token)
   if (!token) {
     return res.status(401).send({ message: "Unauthorized" });
   }
