@@ -38,7 +38,7 @@ const verifyToken = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Token verify error:", error.message);
-    return res.status(403).send({ message: "Forbidden" });
+    return res.status(403).send({ message: error });
   }
 };
 
