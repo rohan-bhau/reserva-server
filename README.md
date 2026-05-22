@@ -85,7 +85,6 @@ PORT=8000
 
 MONGODB_URI=your_mongodb_uri
 
-JWT_SECRET=your_jwt_secret
 ```
 
 ---
@@ -120,19 +119,23 @@ npm run dev
 - location
 - price
 - capacity
+- image
 - timeSlots
 - description
+- author
 - authorEmail
-- image
+- authorId
 
 ### Bookings Collection
-- facility_id
-- user_email
-- booking_date
-- time_slot
-- hours
-- total_price
+- _id
+- facilityName
+- userEmail
+- userId
 - status
+- image
+- bookingDate
+- bookingTime
+- totalPrice
 
 ---
 
