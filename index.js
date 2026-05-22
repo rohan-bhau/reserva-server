@@ -30,7 +30,7 @@ const verifyToken = async (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  console.log("token",token)
+  console.log("token", token);
   if (!token) {
     return res.status(401).send({ message: "Unauthorized" });
   }
@@ -46,7 +46,7 @@ const verifyToken = async (req, res, next) => {
 
 async function run() {
   try {
-    // await client.connect(); 
+    // await client.connect();
 
     const db = client.db("reserva");
     const facilityCollection = db.collection("facilities");
@@ -60,10 +60,49 @@ async function run() {
       res.send(result);
     });
 
-    // all facilities route
+    // all facilities route with search, filter, and sort
     app.get("/facilities", async (req, res) => {
-      const result = await facilityCollection.find().toArray();
-      res.send(result);
+      try {
+        const { search = "", sportType = "", sortOrder = "" } = req.query;
+
+        // Build filter object
+        const filter = {};
+
+        // Search filter using $regex for name and description
+        if (search) {
+          filter.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+          ];
+        }
+
+        // Sport type filter
+        if (sportType && sportType !== "All Sports") {
+          filter.sportType = sportType;
+        }
+
+        // Build sort object
+        let sortObj = {};
+        if (sortOrder === "asc") {
+          sortObj = { price: 1 };
+        } else if (sortOrder === "desc") {
+          sortObj = { price: -1 };
+        }
+
+        // Execute query with filter and sort
+        const query = facilityCollection.find(filter);
+
+        if (Object.keys(sortObj).length > 0) {
+          query.sort(sortObj);
+        }
+
+        const result = await query.toArray();
+        res.send(result);
+      } catch (error) {
+        res
+          .status(500)
+          .send({ message: "Error fetching facilities", error: error.message });
+      }
     });
 
     // individual route
@@ -99,7 +138,7 @@ async function run() {
         { _id: new ObjectId(id) },
         { $set: updateData },
       );
-      res.send(result); 
+      res.send(result);
     });
 
     // featured route
