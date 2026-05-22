@@ -73,7 +73,7 @@ async function run() {
     });
 
     // dynamic route
-    app.get("/facilities/:id", verifyToken, async (req, res) => {
+    app.get("/facilities/:id", async (req, res) => {
       const id = req.params.id;
       const result = await facilityCollection.findOne({
         _id: new ObjectId(id),
